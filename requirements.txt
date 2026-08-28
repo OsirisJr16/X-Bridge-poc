@@ -1,0 +1,24 @@
+# Core
+pandas>=2.2
+numpy>=1.26
+
+# Schema parsing
+lxml>=5.2
+jsonschema>=4.22
+PyYAML>=6.0
+
+# Lexical matching
+rapidfuzz>=3.9
+scikit-learn>=1.5
+
+# Semantic matching
+sentence-transformers>=3.0
+torch>=2.3
+
+# Notebooks
+jupyterlab>=4.2
+
+# Testing / tooling
+pytest>=8.2
+black>=24.4
+ruff>=0.5
