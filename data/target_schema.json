@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CustomerRecord",
+  "type": "object",
+  "required": [
+    "customerId",
+    "customerName",
+    "email"
+  ],
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Unique customer identifier in the target system"
+    },
+    "customerName": {
+      "type": "string",
+      "description": "Family name of the customer"
+    },
+    "firstName": {
+      "type": "string",
+      "description": "Given name of the customer"
+    },
+    "email": {
+      "type": "string",
+      "description": "Electronic mail address of the customer"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "description": "Mobile phone number of the customer"
+    },
+    "birthDate": {
+      "type": "string",
+      "description": "Customer date of birth in ISO 8601 format"
+    },
+    "occupation": {
+      "type": "string",
+      "description": "Job held by the customer"
+    },
+    "address": {
+      "type": "object",
+      "required": [
+        "street",
+        "city"
+      ],
+      "properties": {
+        "street": {
+          "type": "string",
+          "description": "Street name and building number"
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal code of the municipality"
+        },
+        "city": {
+          "type": "string",
+          "description": "Municipality of residence"
+        },
+        "country": {
+          "type": "string",
+          "description": "Country of residence"
+        }
+      }
+    },
+    "totalAmount": {
+      "type": "number",
+      "description": "Total amount of the customer orders"
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency used for monetary amounts"
+    },
+    "itemCount": {
+      "type": "number",
+      "description": "Total number of ordered items"
+    },
+    "accountBalance": {
+      "type": "number",
+      "description": "Available balance on the customer account"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the customer account is active"
+    },
+    "createdAt": {
+      "type": "string",
+      "description": "Creation date of the customer record"
+    },
+    "loyaltyPoints": {
+      "type": "integer",
+      "description": "Number of loyalty points earned by the customer"
+    },
+    "lastLoginAt": {
+      "type": "string",
+      "description": "Timestamp of the most recent customer sign in"
+    },
+    "preferredLanguage": {
+      "type": "string",
+      "description": "Language preferred by the customer for communications"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# Development dependencies, mirroring the [dev] extra in pyproject.toml.
+-r requirements.txt
+
+pytest>=8.2
+ruff>=0.5
