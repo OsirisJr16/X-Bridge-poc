@@ -1,0 +1,19 @@
+[
+  { "source_field": "identifiant_client", "target_field": "customerId" },
+  { "source_field": "nom_client", "target_field": "customerName" },
+  { "source_field": "prenom_client", "target_field": "firstName" },
+  { "source_field": "adresse_email", "target_field": "email" },
+  { "source_field": "numero_telephone", "target_field": "phoneNumber" },
+  { "source_field": "date_naissance", "target_field": "birthDate" },
+  { "source_field": "profession", "target_field": "occupation" },
+  { "source_field": "adresse.rue", "target_field": "address.street" },
+  { "source_field": "adresse.code_postal", "target_field": "address.postalCode" },
+  { "source_field": "adresse.ville", "target_field": "address.city" },
+  { "source_field": "adresse.pays", "target_field": "address.country" },
+  { "source_field": "montant_total", "target_field": "totalAmount" },
+  { "source_field": "devise", "target_field": "currency" },
+  { "source_field": "quantite_articles", "target_field": "itemCount" },
+  { "source_field": "solde_compte", "target_field": "accountBalance" },
+  { "source_field": "est_actif", "target_field": "isActive" },
+  { "source_field": "date_creation", "target_field": "createdAt" }
+]

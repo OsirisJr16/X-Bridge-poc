@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DossierClient",
+  "type": "object",
+  "required": [
+    "identifiant_client",
+    "nom_client",
+    "adresse_email"
+  ],
+  "properties": {
+    "identifiant_client": {
+      "type": "string",
+      "description": "Identifiant unique du client dans le systeme source"
+    },
+    "nom_client": {
+      "type": "string",
+      "description": "Nom de famille du client"
+    },
+    "prenom_client": {
+      "type": "string",
+      "description": "Prenom du client"
+    },
+    "adresse_email": {
+      "type": "string",
+      "description": "Adresse de courrier electronique du client"
+    },
+    "numero_telephone": {
+      "type": "string",
+      "description": "Numero de telephone mobile du client"
+    },
+    "date_naissance": {
+      "type": "string",
+      "description": "Date de naissance du client au format ISO 8601"
+    },
+    "profession": {
+      "type": "string",
+      "description": "Metier exerce par le client"
+    },
+    "adresse": {
+      "type": "object",
+      "required": [
+        "rue",
+        "ville"
+      ],
+      "properties": {
+        "rue": {
+          "type": "string",
+          "description": "Libelle de la voie et numero"
+        },
+        "code_postal": {
+          "type": "string",
+          "description": "Code postal de la commune"
+        },
+        "ville": {
+          "type": "string",
+          "description": "Commune de residence"
+        },
+        "pays": {
+          "type": "string",
+          "description": "Pays de residence"
+        }
+      }
+    },
+    "montant_total": {
+      "type": "number",
+      "description": "Montant total des commandes du client"
+    },
+    "devise": {
+      "type": "string",
+      "description": "Devise utilisee pour les montants"
+    },
+    "quantite_articles": {
+      "type": "integer",
+      "description": "Nombre total d articles commandes"
+    },
+    "solde_compte": {
+      "type": "number",
+      "description": "Solde disponible sur le compte du client"
+    },
+    "est_actif": {
+      "type": "boolean",
+      "description": "Indique si le compte client est actif"
+    },
+    "date_creation": {
+      "type": "string",
+      "description": "Date de creation du dossier client"
+    },
+    "commentaire_interne": {
+      "type": "string",
+      "description": "Note libre reservee aux gestionnaires du back office"
+    },
+    "code_agence": {
+      "type": "string",
+      "description": "Code de l agence bancaire de rattachement"
+    },
+    "numero_tva": {
+      "type": "string",
+      "description": "Numero de TVA intracommunautaire"
+    }
+  }
+}
