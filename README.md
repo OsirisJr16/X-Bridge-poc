@@ -22,9 +22,57 @@ to validate.
 This hypothesis is **not assumed** by the implementation. The three approaches are implemented
 behind the same interface and evaluated with the same metrics against the same ground truth, so
 the comparison can falsify the hypothesis. On the schemas shipped here, it partly does — see
-§7 Results.
+§8 Results.
 
-## 3. Architecture
+## 3. Technology and tooling
+
+### Embedding model
+
+| | |
+|---|---|
+| Model | `intfloat/multilingual-e5-base` |
+| Architecture | BERT-base bi-encoder, 12 layers, 768-dimensional embeddings |
+| Languages | ~100, trained on multilingual text pairs |
+| Size | ~1.1 GB, cached in `~/.cache/huggingface` after the first run |
+| Runs on | CPU by default; set `device` on the encoder for GPU |
+
+It was chosen because the problem is cross-lingual: the bundled schemas use French field names
+against English ones, so an English-only encoder such as `all-MiniLM-L6-v2` cannot place
+`date_naissance` and `birthDate` near each other. The `base` size is a deliberate middle point —
+`small` loses accuracy on short, context-free field names, `large` costs more than this POC needs.
+
+Two model-specific details matter:
+
+- **Prefix.** E5 models expect an instruction prefix. Both sides are encoded with `query: `
+  (configurable via `SemanticSettings.query_prefix`), which is what E5 prescribes for symmetric
+  similarity, as opposed to the asymmetric `query: ` / `passage: ` pair used for retrieval.
+- **Score floor.** E5 places unrelated short texts around 0.7–0.8 cosine, so raw cosine is not a
+  usable 0–1 score. See the cosine rescaling note in §5 for how this is handled.
+
+The model is reached only through the `TextEncoder` protocol in
+`infrastructure/embedding_service.py`. No matcher imports `sentence-transformers`, so the model
+can be swapped, or replaced by a fake, without touching matching logic.
+
+### Libraries
+
+| Library | Version tested | Role |
+|---|---|---|
+| Python | 3.12.3 | `StrEnum`, PEP 604 unions, modern typing |
+| PyTorch | 2.14.0 | inference backend for the encoder |
+| sentence-transformers | 6.1.0 | model loading, batching, embedding normalization |
+| transformers | 5.17.0 | pulled in by sentence-transformers |
+| NumPy | 2.5.3 | similarity, confidence and type-compatibility matrices |
+| scikit-learn | 1.9.1 | `cosine_similarity` for the pairwise score matrix |
+| Pydantic | 2.13.5 | frozen domain models, config validation |
+| pytest | 9.1.1 | test suite |
+| ruff | 0.16.8 | linting and import ordering, line length 100 |
+
+Deliberately **not** used: no fuzzy-matching library (the lexical matcher uses stdlib `difflib`,
+keeping it dependency-free and deterministic), no pandas, no JSON Schema validation library (the
+analyzer reads `properties`/`required`/`type` directly), and no LLM. An LLM-based ambiguity
+resolver is future work behind a separate interface, not part of this baseline.
+
+## 4. Architecture
 
 ```
 src/x_bridge/
@@ -43,7 +91,7 @@ Two boundaries are deliberate:
   `TextEncoder` protocol, never on `sentence-transformers`. The full test suite runs offline
   against a deterministic fake encoder.
 
-## 4. Matching pipeline
+## 5. Matching pipeline
 
 1. **Analyze** both schemas into flat `SchemaField` lists. Nested objects are flattened while
    preserving the full path, so `adresse.code_postal` stays a uniquely identifiable field.
@@ -59,7 +107,7 @@ Two boundaries are deliberate:
    - *Hybrid*: `lexical_weight × lexical + semantic_weight × semantic + type_weight × type`.
 3. **Compute type compatibility** for every pair. Incompatible types are *not* rejected outright;
    compatibility is one weighted factor, so a strong semantic match can survive a type mismatch.
-4. **Score confidence** (see §5).
+4. **Score confidence** (see §6).
 5. **Select candidates** — all pairs at or above the review threshold are ranked by confidence and
    assigned greedily. By default a target may be used once (`allow_many_to_one` disables this), so
    when two source fields compete for one target the higher-confidence mapping wins. Ties break on
@@ -74,7 +122,7 @@ as 0–1 scores. Scores are rescaled from `[cosine_floor, 1]` to `[0, 1]`, with 
 by default. This is an experimental calibration constant, not a property of the model, and it is
 configurable.
 
-## 5. Similarity score vs confidence score
+## 6. Similarity score vs confidence score
 
 These are deliberately distinct, and both are reported.
 
@@ -94,7 +142,7 @@ These are deliberately distinct, and both are reported.
 
 Thresholds are applied to **confidence**, not similarity.
 
-## 6. Installation
+## 7. Installation
 
 Requires Python 3.12+.
 
@@ -114,7 +162,7 @@ pip install -r requirements-dev.txt
 The first semantic run downloads `intfloat/multilingual-e5-base` (~1.1 GB). The test suite does
 not require it.
 
-## 7. Usage and experiments
+## 8. Usage and experiments
 
 ```bash
 python scripts/run_matching.py --method lexical
@@ -171,7 +219,7 @@ a lower `lexical_weight` is the obvious next experiment.
 Precision is 1.000 for every method, which reflects a conservative pipeline on a small, clean
 dataset. It should not be read as a general accuracy claim.
 
-## 8. Evaluation metrics
+## 9. Evaluation metrics
 
 The evaluator reports three groups separately, because they answer different questions:
 
@@ -186,7 +234,7 @@ A mapping counts as a true positive only if it reproduces the exact target field
 `data/ground_truth.json`. `data/ground_truth.json` is used for evaluation only and never
 influences matching.
 
-## 9. Limitations
+## 10. Limitations
 
 - One schema pair, one language pair, 20 fields per side. Nothing here generalizes without more
   datasets.
@@ -200,7 +248,7 @@ influences matching.
 - The hybrid weights and the cosine floor are untuned defaults.
 - Matching is O(n×m) over all field pairs, with no blocking or indexing.
 
-## 10. Future work
+## 11. Future work
 
 - Tune weights and thresholds against the ground truth instead of assuming the defaults, and
   report the search rather than the winner alone.
